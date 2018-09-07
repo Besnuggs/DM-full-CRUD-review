@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Post from './Post';
+import axios from 'axios';
 
 class Profile extends Component {
   constructor(props) {
@@ -9,6 +10,15 @@ class Profile extends Component {
       username: 'username will go here',
       profilePic: '',
     };
+  }
+
+  componentDidMount() {
+    axios.get(`/api/posts?userid=${this.props.match.params.id}`).then(response => {
+      console.log(response.data);
+      this.setState({
+        posts: response.data,
+      });
+    });
   }
 
   render() {
@@ -21,6 +31,9 @@ class Profile extends Component {
           image={e.image}
           caption={e.caption}
           deletePost={this.deletePost}
+          user_img={e.user_img}
+          username={e.username}
+          user_id={e.user_id}
         />
       );
     });

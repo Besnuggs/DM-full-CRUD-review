@@ -3,13 +3,21 @@ require('dotenv').config();
 const express = require('express'),
   bodyParser = require('body-parser'),
   massive = require('massive'),
-  ctrl = require('./controller.js');
-auth_ctrl = require('./auth_controller.js');
+  ctrl = require('./controller.js'),
+  auth_ctrl = require('./auth_controller.js'),
+  session = require('express-session');
 
 const app = express(),
   PORT = 3005;
 
 app.use(bodyParser.json());
+app.use(
+  session({
+    secret: 'akjdhfpq9384ytpq349hji',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 massive(process.env.DB_CONNECTION_STRING).then(db => {
   app.set('db', db);

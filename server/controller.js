@@ -1,27 +1,42 @@
 module.exports = {
   getPosts: (req, res) => {
     const db = req.app.get('db');
-    db.get_all_posts()
-      .then(posts => {
+    const { userid } = req.query;
+    console.log(req.query);
+    if (userid) {
+      db.get_posts_by_userid({ id: userid }).then(posts => {
         res.status(200).send(posts);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
       });
+    } else {
+      db.get_all_posts()
+        .then(posts => {
+          res.status(200).send(posts);
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+    }
   },
   updatePost: (req, res) => {
-    let { caption } = req.body;
+    let { caption, user_id } = req.body;
     let { id } = req.params;
+
     const db = req.app.get('db');
-    db.update_post({ caption, id })
-      .then(posts => {
-        res.status(200).send(posts);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send(err);
-      });
+
+    if (user_id === req.session.user_id) {
+      db.update_post({ caption, id })
+        .then(posts => {
+          res.status(200).send(posts);
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+    } else {
+      console.log('not yours');
+      res.status(500).send('not yours');
+    }
   },
   addPost: (req, res) => {
     let { image, caption } = req.body;
